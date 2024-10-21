@@ -116,7 +116,7 @@ and the permission of EGID and UGID
 ```
 
 Explication:
-level0 have acces to a flie
+level0 have the uid of level1
 ```
 -rwsr-x---+ 1 level1 users  747441 Mar  6  2016 level0*
 ```
