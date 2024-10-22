@@ -15,7 +15,6 @@ Non-debugging symbols:
 0x08048380  __gmon_start__@plt
 0x08048390  __libc_start_main
 0x08048390  __libc_start_main@plt
----Type <return> to continue, or q <return> to quit---
 0x080483a0  _start
 0x080483d0  __do_global_dtors_aux
 0x08048430  frame_dummy
@@ -27,7 +26,8 @@ Non-debugging symbols:
 0x08048552  __i686.get_pc_thunk.bx
 0x08048560  __do_global_ctors_aux
 0x0804858c  _fini
-(gdb) q```
+(gdb) q
+```
 
 ```(gdb) r Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
 The program being debugged has been started already.

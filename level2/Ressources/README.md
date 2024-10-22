@@ -1,4 +1,3 @@
-level2@RainFall:~$ ltrace ./level2 
 ```
 level2@RainFall:~$ gdb -q ./level2 
 Reading symbols from /home/user/level2/level2...(no debugging symbols found)...done.
@@ -30,7 +29,6 @@ Dump of assembler code for function p:
    0x08048505 <+49>:    jne    0x8048527 <p+83>
    0x08048507 <+51>:    mov    $0x8048620,%eax
    0x0804850c <+56>:    mov    -0xc(%ebp),%edx
----Type <return> to continue, or q <return> to quit---
    0x0804850f <+59>:    mov    %edx,0x4(%esp)
    0x08048513 <+63>:    mov    %eax,(%esp)
    0x08048516 <+66>:    call   0x80483a0 <printf@plt>
