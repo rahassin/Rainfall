@@ -3,8 +3,8 @@
 #include <string.h>
 
 void p(void) {
-	unsigned int	check;
 	char			str[76];
+	unsigned int	check;
 
     fflush(stdout);
     gets(str);
