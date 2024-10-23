@@ -1,3 +1,7 @@
+the program can allocate memory with the command 'auth ' ans 'service'
+the instruction ```auth[32] != 0``` check if adress of auth + 32 exist
+we can call multiple time service to allocate memory at this space
+
 
 ```
 auth 
